@@ -11,6 +11,8 @@ import CallKit
 import SkyWay
 import AVFoundation
 
+let supportsVideo = false
+
 class ViewController: UIViewController {
 
     fileprivate var peer: SKWPeer?
@@ -25,7 +27,7 @@ class ViewController: UIViewController {
     @IBOutlet weak var callButton: UIButton!
     @IBOutlet weak var endCallButton: UIButton!
 
-    let callCenter = CallCenter(supportsVideo: true)
+    let callCenter = CallCenter(supportsVideo: supportsVideo)
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -56,7 +58,7 @@ class ViewController: UIViewController {
         }
 
         showPeersDialog(peer) { peerId in
-            self.callCenter.StartCall(true)
+            self.callCenter.StartCall(supportsVideo)
             self.connect(targetPeerId: peerId)
         }
     }
@@ -104,8 +106,10 @@ extension ViewController {
     func setupStream(peer:SKWPeer){
         SKWNavigator.initialize(peer);
         let constraints:SKWMediaConstraints = SKWMediaConstraints()
-        self.localStream = SKWNavigator.getUserMedia(constraints)
-        self.localStream?.addVideoRenderer(self.localStreamView, track: 0)
+        if supportsVideo {
+            self.localStream = SKWNavigator.getUserMedia(constraints)
+            self.localStream?.addVideoRenderer(self.localStreamView, track: 0)
+        }
     }
 
     func call(targetPeerId:String){
@@ -195,7 +199,7 @@ extension ViewController{
         peer.on(SKWPeerEventEnum.PEER_EVENT_CONNECTION) { obj in
             if let connection = obj as? SKWDataConnection{
                 if self.dataConnection == nil { // may be callee
-                    self.callCenter.IncomingCall(true)
+                    self.callCenter.IncomingCall(supportsVideo)
                 }
                 self.dataConnection = connection
                 self.setupDataConnectionCallbacks(dataConnection: connection)
@@ -208,9 +212,11 @@ extension ViewController{
         // MARK: MEDIACONNECTION_EVENT_STREAM
         mediaConnection.on(SKWMediaConnectionEventEnum.MEDIACONNECTION_EVENT_STREAM) { obj in
             if let msStream = obj as? SKWMediaStream{
-                self.remoteStream = msStream
-                DispatchQueue.main.async {
-                    self.remoteStream?.addVideoRenderer(self.remoteStreamView, track: 0)
+                if supportsVideo {
+                    self.remoteStream = msStream
+                    DispatchQueue.main.async {
+                        self.remoteStream?.addVideoRenderer(self.remoteStreamView, track: 0)
+                    }
                 }
                 self.changeConnectionStatusUI(connected: true)
                 self.callCenter.Connected()
@@ -221,8 +227,10 @@ extension ViewController{
         mediaConnection.on(SKWMediaConnectionEventEnum.MEDIACONNECTION_EVENT_CLOSE) { obj in
             if let _ = obj as? SKWMediaConnection{
                 DispatchQueue.main.async {
-                    self.remoteStream?.removeVideoRenderer(self.remoteStreamView, track: 0)
-                    self.remoteStream = nil
+                    if supportsVideo {
+                        self.remoteStream?.removeVideoRenderer(self.remoteStreamView, track: 0)
+                        self.remoteStream = nil
+                    }
                     self.dataConnection = nil
                     self.mediaConnection = nil
                 }
