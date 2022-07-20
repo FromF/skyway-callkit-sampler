@@ -17,41 +17,54 @@
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <stackView opaque="NO" contentMode="scaleToFill" spacing="10" translatesAutoresizingMaskIntoConstraints="NO" id="TQU-0m-Qn0">
-                                <rect key="frame" x="102" y="423" width="210" height="50"/>
+                            <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="10" translatesAutoresizingMaskIntoConstraints="NO" id="TQU-0m-Qn0">
+                                <rect key="frame" x="102" y="402.66666666666669" width="210" height="91"/>
                                 <subviews>
-                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="gHh-e0-3GC">
-                                        <rect key="frame" x="0.0" y="0.0" width="100" height="50"/>
-                                        <color key="backgroundColor" systemColor="systemBlueColor"/>
-                                        <constraints>
-                                            <constraint firstAttribute="width" constant="100" id="RuL-pH-eWB"/>
-                                            <constraint firstAttribute="height" constant="50" id="h26-r8-WKs"/>
-                                        </constraints>
-                                        <state key="normal" title="Call">
-                                            <color key="titleColor" systemColor="systemGray6Color"/>
-                                        </state>
-                                        <state key="disabled">
-                                            <color key="titleColor" systemColor="systemGray4Color"/>
-                                        </state>
+                                    <stackView opaque="NO" contentMode="scaleToFill" spacing="10" translatesAutoresizingMaskIntoConstraints="NO" id="NIU-fe-1Uy">
+                                        <rect key="frame" x="0.0" y="0.0" width="210" height="50"/>
+                                        <subviews>
+                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="gHh-e0-3GC">
+                                                <rect key="frame" x="0.0" y="0.0" width="100" height="50"/>
+                                                <color key="backgroundColor" systemColor="systemBlueColor"/>
+                                                <constraints>
+                                                    <constraint firstAttribute="width" constant="100" id="RuL-pH-eWB"/>
+                                                    <constraint firstAttribute="height" constant="50" id="h26-r8-WKs"/>
+                                                </constraints>
+                                                <state key="normal" title="Call">
+                                                    <color key="titleColor" systemColor="systemGray6Color"/>
+                                                </state>
+                                                <state key="disabled">
+                                                    <color key="titleColor" systemColor="systemGray4Color"/>
+                                                </state>
+                                                <connections>
+                                                    <action selector="tapCall" destination="BYZ-38-t0r" eventType="touchUpInside" id="a2P-7n-QjA"/>
+                                                </connections>
+                                            </button>
+                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="n0S-JM-mTC">
+                                                <rect key="frame" x="110" y="0.0" width="100" height="50"/>
+                                                <color key="backgroundColor" systemColor="systemRedColor"/>
+                                                <constraints>
+                                                    <constraint firstAttribute="width" constant="100" id="ZtU-Cw-Irm"/>
+                                                    <constraint firstAttribute="height" constant="50" id="xPS-P7-mic"/>
+                                                </constraints>
+                                                <state key="normal" title="end Call">
+                                                    <color key="titleColor" systemColor="systemGray6Color"/>
+                                                </state>
+                                                <state key="disabled">
+                                                    <color key="titleColor" systemColor="systemGray4Color"/>
+                                                </state>
+                                                <connections>
+                                                    <action selector="tapEndCall" destination="BYZ-38-t0r" eventType="touchUpInside" id="KHW-rQ-4k4"/>
+                                                </connections>
+                                            </button>
+                                        </subviews>
+                                    </stackView>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="huL-PC-8Uy">
+                                        <rect key="frame" x="0.0" y="60" width="210" height="31"/>
+                                        <state key="normal" title="Button"/>
+                                        <buttonConfiguration key="configuration" style="plain" title="Mute"/>
                                         <connections>
-                                            <action selector="tapCall" destination="BYZ-38-t0r" eventType="touchUpInside" id="a2P-7n-QjA"/>
-                                        </connections>
-                                    </button>
-                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="n0S-JM-mTC">
-                                        <rect key="frame" x="110" y="0.0" width="100" height="50"/>
-                                        <color key="backgroundColor" systemColor="systemRedColor"/>
-                                        <constraints>
-                                            <constraint firstAttribute="width" constant="100" id="ZtU-Cw-Irm"/>
-                                            <constraint firstAttribute="height" constant="50" id="xPS-P7-mic"/>
-                                        </constraints>
-                                        <state key="normal" title="end Call">
-                                            <color key="titleColor" systemColor="systemGray6Color"/>
-                                        </state>
-                                        <state key="disabled">
-                                            <color key="titleColor" systemColor="systemGray4Color"/>
-                                        </state>
-                                        <connections>
-                                            <action selector="tapEndCall" destination="BYZ-38-t0r" eventType="touchUpInside" id="KHW-rQ-4k4"/>
+                                            <action selector="tapMute:" destination="BYZ-38-t0r" eventType="touchUpInside" id="tma-hq-NPd"/>
                                         </connections>
                                     </button>
                                 </subviews>
@@ -88,6 +101,7 @@
                     <connections>
                         <outlet property="callButton" destination="gHh-e0-3GC" id="Vcx-z5-Sf0"/>
                         <outlet property="endCallButton" destination="n0S-JM-mTC" id="GQC-gg-g9r"/>
+                        <outlet property="muteButton" destination="huL-PC-8Uy" id="LmO-Ha-kON"/>
                         <outlet property="myPeerIdLabel" destination="Oal-LP-Nbd" id="BNb-Kd-zVW"/>
                     </connections>
                 </viewController>

@@ -14,7 +14,9 @@ class CallCenter: NSObject {
     private let controller = CXCallController()
     private let provider: CXProvider
     private var uuid = UUID()
-
+    
+    var isMuted: Bool = false
+    
     init(supportsVideo: Bool) {
         let providerConfiguration = CXProviderConfiguration(localizedName: "SkyWay(CallKit)")
         providerConfiguration.supportsVideo = supportsVideo
@@ -26,6 +28,7 @@ class CallCenter: NSObject {
     }
 
     func StartCall(_ hasVideo: Bool = false) {
+        isMuted = false
         uuid = UUID()
         let handle = CXHandle(type: .generic, value: "花子さん")
         let startCallAction = CXStartCallAction(call: uuid, handle: handle)
@@ -39,6 +42,7 @@ class CallCenter: NSObject {
     }
 
     func IncomingCall(_ hasVideo: Bool = false) {
+        isMuted = false
         uuid = UUID()
         let update = CXCallUpdate()
         update.remoteHandle = CXHandle(type: .generic, value: "太郎さん")
@@ -56,6 +60,16 @@ class CallCenter: NSObject {
         controller.request(transaction) { error in
             if let error = error {
                 print("CXEndCallAction error: \(error.localizedDescription)")
+            }
+        }
+    }
+    
+    func CallMuted(_ muted: Bool) {
+        let mutedAction = CXSetMutedCallAction(call: uuid, muted: muted)
+        let transaction = CXTransaction(action: mutedAction)
+        controller.request(transaction) { error in
+            if let error = error {
+                print("CXStartCallAction error: \(error.localizedDescription)")
             }
         }
     }

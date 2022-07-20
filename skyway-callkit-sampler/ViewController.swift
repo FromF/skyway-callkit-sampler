@@ -26,7 +26,8 @@ class ViewController: UIViewController {
     @IBOutlet weak var remoteStreamView: SKWVideo!
     @IBOutlet weak var callButton: UIButton!
     @IBOutlet weak var endCallButton: UIButton!
-
+    @IBOutlet weak var muteButton: UIButton!
+    
     let callCenter = CallCenter(supportsVideo: supportsVideo)
 
     override func viewDidLoad() {
@@ -69,7 +70,13 @@ class ViewController: UIViewController {
         self.changeConnectionStatusUI(connected: false)
         self.callCenter.EndCall()
     }
-
+    
+    @IBAction func tapMute(_ sender: Any) {
+        let isMuted = !(callCenter.isMuted)
+        callCenter.CallMuted(isMuted)
+    }
+    
+    
     func changeConnectionStatusUI(connected:Bool){
         if connected {
             self.callButton.isEnabled = false
@@ -77,6 +84,14 @@ class ViewController: UIViewController {
         }else{
             self.callButton.isEnabled = true
             self.endCallButton.isEnabled = false
+        }
+    }
+    
+    func changeMuteStatusUI(isMuted:Bool) {
+        if !isMuted {
+            self.muteButton.setTitle("muted", for: .normal)
+        } else {
+            self.muteButton.setTitle("mute", for: .normal)
         }
     }
 }
@@ -106,9 +121,13 @@ extension ViewController {
     func setupStream(peer:SKWPeer){
         SKWNavigator.initialize(peer);
         let constraints:SKWMediaConstraints = SKWMediaConstraints()
+        self.localStream = SKWNavigator.getUserMedia(constraints)
         if supportsVideo {
-            self.localStream = SKWNavigator.getUserMedia(constraints)
             self.localStream?.addVideoRenderer(self.localStreamView, track: 0)
+        } else {
+            for pos in 0 ..< (self.localStream?.getVideoTracks() ?? 0) {
+                self.localStream?.setEnableVideoTrack(pos, enable: false)
+            }
         }
     }
 
@@ -212,10 +231,14 @@ extension ViewController{
         // MARK: MEDIACONNECTION_EVENT_STREAM
         mediaConnection.on(SKWMediaConnectionEventEnum.MEDIACONNECTION_EVENT_STREAM) { obj in
             if let msStream = obj as? SKWMediaStream{
-                if supportsVideo {
                     self.remoteStream = msStream
+                if supportsVideo {
                     DispatchQueue.main.async {
                         self.remoteStream?.addVideoRenderer(self.remoteStreamView, track: 0)
+                    }
+                } else {
+                    for pos in 0 ..< (self.localStream?.getVideoTracks() ?? 0) {
+                        self.localStream?.setEnableVideoTrack(pos, enable: false)
                     }
                 }
                 self.changeConnectionStatusUI(connected: true)
@@ -229,8 +252,8 @@ extension ViewController{
                 DispatchQueue.main.async {
                     if supportsVideo {
                         self.remoteStream?.removeVideoRenderer(self.remoteStreamView, track: 0)
-                        self.remoteStream = nil
                     }
+                    self.remoteStream = nil
                     self.dataConnection = nil
                     self.mediaConnection = nil
                 }
@@ -281,6 +304,13 @@ extension ViewController: CXProviderDelegate {
         self.dataConnection?.close()
         self.mediaConnection?.close()
         action.fulfill()
+    }
+    
+    func provider(_ provider: CXProvider, perform action: CXSetMutedCallAction) {
+        let isMuted = action.isMuted
+        callCenter.isMuted = isMuted
+        print("isMuted:\(isMuted)")
+        self.changeMuteStatusUI(isMuted: isMuted)
     }
 }
 
