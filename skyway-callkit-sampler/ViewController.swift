@@ -307,9 +307,30 @@ extension ViewController: CXProviderDelegate {
     }
     
     func provider(_ provider: CXProvider, perform action: CXSetMutedCallAction) {
+        //ミュート処理
         let isMuted = action.isMuted
         callCenter.isMuted = isMuted
-        print("isMuted:\(isMuted)")
+        print("\(#function):isMuted:\(isMuted)")
+        self.changeMuteStatusUI(isMuted: isMuted)
+        action.fulfill()
+    }
+    
+    func provider(_ provider: CXProvider, perform action: CXSetHeldCallAction) {
+        // 保留ON/OFF処理
+        action.fulfill()
+    }
+    
+    func provider(_ provider: CXProvider, didActivate audioSession: AVAudioSession) {
+        let isMuted = false
+        callCenter.isMuted = isMuted
+        print("\(#function):isMuted:\(isMuted)")
+        self.changeMuteStatusUI(isMuted: isMuted)
+    }
+    
+    func provider(_ provider: CXProvider, didDeactivate audioSession: AVAudioSession) {
+        let isMuted = true
+        callCenter.isMuted = isMuted
+        print("\(#function):isMuted:\(isMuted)")
         self.changeMuteStatusUI(isMuted: isMuted)
     }
 }
